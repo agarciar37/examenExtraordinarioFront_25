@@ -3,21 +3,20 @@ import { useEffect, useState } from "preact/hooks";
 import { Character } from "../types.ts";
 import CharacterCard from "../components/CharacterCard.tsx";
 import SearchBar from "./SearchBar.tsx";
+import axios from "axios";
 
 const CharactersContainer: FunctionComponent = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [nextPage, setNextPage] = useState<string | null>(null);
-  const [prevPage, setPrevPage] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const page = url.searchParams.get("page") ?? "1";
-    const name = url.searchParams.get("name") ?? "";
-    setSearchQuery(name);
-    fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}`)
-      .then((res) => res.json())
-      .then((data) => {
+  const fetchCharacters = (p: number, name: string) => {
+    axios
+      .get(`https://rickandmortyapi.com/api/character?page=${p}&name=${name}`)
+      .then((res) => {
+        const data = res.data;
         const chars = data.results.map((char: any) => ({
           id: char.id,
           name: char.name,
@@ -29,46 +28,45 @@ const CharactersContainer: FunctionComponent = () => {
           image: char.image,
         })) as Character[];
         setCharacters(chars);
-        setNextPage(data.info.next);
-        setPrevPage(data.info.prev);
+        setHasNext(Boolean(data.info.next));
+        setHasPrev(Boolean(data.info.prev));
       })
       .catch(() => {
         setCharacters([]);
-        setNextPage(null);
-        setPrevPage(null);
+        setHasNext(false);
+        setHasPrev(false);
       });
-  }, []);
-  const getPageNumber = (url: string | null) => {
-    if (!url) return null;
-    const parsed = new URL(url);
-    return parsed.searchParams.get("page");
+  };
+
+  useEffect(() => {
+    fetchCharacters(page, searchQuery);
+  }, [page, searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setPage(1);
+    setSearchQuery(query);
   };
 
   return (
     <div class="container">
         <h1 class="title">Rick and Morty Characters</h1>
-        <SearchBar initialValue={searchQuery} />
+        <SearchBar initialValue={searchQuery} onSearch={handleSearch} />
         <div class="characters">
             {characters.length === 0 ? <p>No se encontraron personajes</p> : (
             characters.map((c) => <CharacterCard key={c.id} character={c} />)
             )}
         </div>
         <div class="pagination">
-            {prevPage && (
-            <a
-                class="button"
-                href={`/?page=${getPageNumber(prevPage)}&name=${searchQuery}`}
-            >
+            {hasPrev && (
+            <button class="button" onClick={() => setPage(page - 1)}>
                 ← Anterior
-            </a>
+            </button>
             )}
-            {nextPage && (
-            <a
-                class="button"
-                href={`/?page=${getPageNumber(nextPage)}&name=${searchQuery}`}
-            >
+            {hasNext && (
+            <button class="button" onClick={() => setPage(page + 1)}>
                 Siguiente →
-            </a>
+            
+            </button>
             )}
         </div>
         </div>
