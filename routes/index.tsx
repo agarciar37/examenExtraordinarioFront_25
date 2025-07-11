@@ -11,8 +11,18 @@ export const handler: Handlers= {
     GET: async (req: Request, ctx: FreshContext<unknown, Data>) => {
         const url = "https://rickandmortyapi.com/api/character"
         try {
-            const response = await axios.get<Character[]>(url)
-            return ctx.render({characters: response.data})
+            const response = await axios.get(url)
+            const characters = response.data.results.map((char: any) => ({
+                id: char.id,
+                name: char.name,
+                status: char.status,
+                species: char.species,
+                gender: char.gender,
+                origin: char.origin.name,
+                location: char.location.name,
+                image: char.image
+            })) as Character[];
+            return ctx.render({characters})
         } catch (e) {
             return new Response("Error fetching data")
         }

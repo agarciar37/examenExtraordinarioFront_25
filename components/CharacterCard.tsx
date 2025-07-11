@@ -9,10 +9,10 @@ const CharacterCard: FunctionComponent<Props> = (props) => {
     const {character} = props;
     return (
         <div class="character-card">
-            <h1>
-                <p>{character.name}</p>
+            <a href={`/character/${character.id}`}>
+                <h1>{character.name}</h1>
                 <img src={character.image} alt={character.name}/>
-            </h1>
+            </a>
         </div>
     )
 }

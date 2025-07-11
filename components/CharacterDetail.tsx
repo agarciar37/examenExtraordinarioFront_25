@@ -9,14 +9,12 @@ const CharacterDetail: FunctionComponent<Props> = (props) => {
     const {character} = props
     return (
         <div class="character-detail">
-            <p href={"/"}>Volver</p>
+            <a href={"/"}>Volver</a>
             <img src={character.image} alt={character.name}/>
             <p>{character.name}</p>
             <p>Status: {character.status}</p>
             <p>Species: {character.species}</p>
             <p>Gender: {character.gender}</p>
-            <p>Origin: {character.origin}</p>
-            <p>Location: {character.location}</p>
         </div>
     )
 }
