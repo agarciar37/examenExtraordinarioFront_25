@@ -6,12 +6,10 @@ interface Props {
 }
 
 const CharacterCard: FunctionComponent<Props> = ({ character }) => (
-  <div class="character-card">
-    <a href={`/character/${character.id}`}>
-      <h1>{character.name}</h1>
-      <img src={character.image} alt={character.name} />
-    </a>
-  </div>
+  <a href={`/character/${character.id}`} class="character-card">
+    <img src={character.image} alt={character.name} />
+    <p>{character.name}</p>
+  </a>
 );
 
 export default CharacterCard;
