@@ -1,21 +1,43 @@
 import { FunctionComponent } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { Character } from "../types.ts";
 import CharacterCard from "../components/CharacterCard.tsx";
 import SearchBar from "./SearchBar.tsx";
 
-interface Props {
-  characters: Character[];
-  nextPage: string | null;
-  prevPage: string | null;
-  searchQuery: string;
-}
+const CharactersContainer: FunctionComponent = () => {
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [nextPage, setNextPage] = useState<string | null>(null);
+  const [prevPage, setPrevPage] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-const CharactersContainer: FunctionComponent<Props> = ({
-  characters,
-  nextPage,
-  prevPage,
-  searchQuery,
-}) => {
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const page = url.searchParams.get("page") ?? "1";
+    const name = url.searchParams.get("name") ?? "";
+    setSearchQuery(name);
+    fetch(`https://rickandmortyapi.com/api/character?page=${page}&name=${name}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const chars = data.results.map((char: any) => ({
+          id: char.id,
+          name: char.name,
+          status: char.status,
+          species: char.species,
+          gender: char.gender,
+          origin: char.origin,
+          location: char.location,
+          image: char.image,
+        })) as Character[];
+        setCharacters(chars);
+        setNextPage(data.info.next);
+        setPrevPage(data.info.prev);
+      })
+      .catch(() => {
+        setCharacters([]);
+        setNextPage(null);
+        setPrevPage(null);
+      });
+  }, []);
   const getPageNumber = (url: string | null) => {
     if (!url) return null;
     const parsed = new URL(url);

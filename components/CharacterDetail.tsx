@@ -2,10 +2,13 @@ import { FunctionComponent } from "preact";
 import { Character } from "../types.ts";
 
 interface Props {
-  character: Character;
+  character?: Character | null;
 }
 
 const CharacterDetail: FunctionComponent<Props> = ({ character }) => {
+  if (!character) {
+    return <p>Cargando...</p>;
+  }
   return (
     <div class="character-detail">
       <a class="back-link" href="/">← Volver</a>

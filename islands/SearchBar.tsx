@@ -10,7 +10,7 @@ const SearchBar = ({ initialValue }: Props) => {
         name="name"
         class="search-input"
         placeholder="Buscar personaje..."
-        value={initialValue}
+        defaultValue={initialValue}
       />
       <button type="submit" class="button">Buscar</button>
     </form>
