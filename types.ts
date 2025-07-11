@@ -1,10 +1,16 @@
 export interface Character {
-    id: string;
+  id: number;
+  name: string;
+  status: string;
+  species: string;
+  gender: string;
+  origin: {
     name: string;
-    status: string;
-    species: string;
-    gender: string;
-    origin: string;
-    location: {name: string};
-    image: string;
+    url: string;
+  };
+  location: {
+    name: string;
+    url: string;
+  };
+  image: string;
 }

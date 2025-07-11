@@ -2,28 +2,54 @@ import { FunctionComponent } from "preact";
 import { Character } from "../types.ts";
 import CharacterCard from "../components/CharacterCard.tsx";
 import SearchBar from "./SearchBar.tsx";
-import { useComputed } from "@preact/signals";
-import { searchTerm } from "../utils/charactersSignal.ts";
 
 interface Props {
-    characters: Character[]
+  characters: Character[];
+  nextPage: string | null;
+  prevPage: string | null;
+  searchQuery: string;
 }
 
-const CharactersContainer: FunctionComponent<Props> = (props) => {
-    const {characters} = props;
-    const filteredCharacters = useComputed(() => characters.filter((c)=>c.name.toLowerCase().includes(searchTerm.value.toLowerCase())))
-    return(
-        <div class="characters">
-            <SearchBar/>
-            {
-                filteredCharacters.value.length === 0? (
-                    <p>No se encontraron Personajes</p>
-                ): (filteredCharacters.value.map((c) => (
-                    <CharacterCard key={c.id} character={c}/>
-                )))
-            }
-        </div>
-    )
-}
+const CharactersContainer: FunctionComponent<Props> = ({
+  characters,
+  nextPage,
+  prevPage,
+  searchQuery,
+}) => {
+  const getPageNumber = (url: string | null) => {
+    if (!url) return null;
+    const parsed = new URL(url);
+    return parsed.searchParams.get("page");
+  };
+
+  return (
+    <div class="container">
+      <SearchBar initialValue={searchQuery} />
+      <div class="characters">
+        {characters.length === 0 ? <p>No se encontraron personajes</p> : (
+          characters.map((c) => <CharacterCard key={c.id} character={c} />)
+        )}
+      </div>
+      <div class="pagination">
+        {prevPage && (
+          <a
+            class="button"
+            href={`/?page=${getPageNumber(prevPage)}&name=${searchQuery}`}
+          >
+            ← Anterior
+          </a>
+        )}
+        {nextPage && (
+          <a
+            class="button"
+            href={`/?page=${getPageNumber(nextPage)}&name=${searchQuery}`}
+          >
+            Siguiente →
+          </a>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default CharactersContainer;
