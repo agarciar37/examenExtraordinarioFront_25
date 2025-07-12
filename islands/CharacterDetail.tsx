@@ -1,7 +1,8 @@
 import { Character } from "../types.ts";
 import CharacterDetail from "../components/CharacterDetail.tsx";
-import { useState, useEffect } from "preact/hooks/src/index.js";
-import { FunctionComponent } from "preact/src/index.js";
+import { useState, useEffect } from "preact/hooks";
+import { FunctionComponent } from "preact";
+
 
 interface Props {
   id: string;
